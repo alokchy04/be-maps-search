@@ -1,6 +1,6 @@
 import { getTomtomFuzzySearchResponse } from "./connectors/tomtom-connector";
-import { getPlaceAutocomplete } from "./maps-api";
 import { AppError, FetchError } from "./errors";
+import { getPlaceAutocomplete } from "./maps-api";
 
 jest.mock("./connectors/tomtom-connector", () => ({
   getTomtomFuzzySearchResponse: jest.fn(),
