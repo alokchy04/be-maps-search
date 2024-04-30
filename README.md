@@ -26,7 +26,7 @@ Install:
 Test:
 =====
 1. yarn install
-2. yarn test
+2. yarn test (you need to set TOMTOM_API_KEY in .env.test)
 
 
 Requirements:
