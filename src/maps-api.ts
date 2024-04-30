@@ -1,16 +1,34 @@
-import axios from 'axios'
+import { TomtomFuzzySearchResponse } from "./connectors/models";
+import { getTomtomFuzzySearchResponse } from "./connectors/tomtom-connector";
+import { AppError } from "./errors";
+import { AutoCompleteDetailsResponse } from "./models";
 
-// https://developer.tomtom.com/search-api/documentation/search-service/fuzzy-search
-export async function getPlaceAutocomplete(key: string, address: string) {
-    const autocomplete = await axios.get(`https://api.tomtom.com/search/2/search/${address}.json'`, {
-        params: {
-            key,
-            limit: 100,
-        }
-    });
-    return autocomplete.data.results.map((result) => {
+export async function getPlaceAutocomplete(
+  key: string,
+  address: string
+): Promise<AutoCompleteDetailsResponse> {
+  return getTomtomFuzzySearchResponse(key, address).then((response) => {
+    return mapResponse(response);
+  });
+}
+
+function mapResponse(
+  autocompleteResponse: TomtomFuzzySearchResponse
+): AutoCompleteDetailsResponse {
+  try {
+    return autocompleteResponse.results
+      .filter((result) => result.address)
+      .map((result) => {
         return {
-            placeId: result.id,
-        }
-    })
+          placeId: result.id,
+          streetNumber: result.address.streetNumber,
+          countryCode: result.address.countryCode,
+          country: result.address.country,
+          municipality: result.address.municipality,
+          freeformAddress: result.address.freeformAddress,
+        };
+      });
+  } catch (error) {
+    throw new AppError("Failed to map tomtom api response!", error as Error);
+  }
 }

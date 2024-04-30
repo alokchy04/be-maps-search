@@ -1,12 +1,19 @@
-import { getPlaceAutocomplete } from './maps-api'
+import { getPlaceAutocomplete } from "./maps-api";
+import { AutoCompleteDetailsResponse } from "./models";
+import { logger } from "./utils";
 
-export async function getAutoCompleteDetails(address: any): Promise<any> {
-    const apiKey = process.env.TOMTOM_API_KEY;
-    // get autocomplete results
-    const res = getPlaceAutocomplete(process.env.TOMTOM_API_KEY, address).then(async (autocompleteResults) => {
-        const res = []
-        return res
+export async function getAutoCompleteDetails(
+  address: string
+): Promise<AutoCompleteDetailsResponse> {
+  const apiKey = process.env.TOMTOM_API_KEY as string;
+
+  return getPlaceAutocomplete(apiKey, address)
+    .then((tomtomResponse) => {
+      return tomtomResponse;
     })
-    // loop over and get details and map results
-    return res
+    .catch((error) => {
+      logger.error("Error while autocomplete details:", error);
+      // Todo: also want to notify error such as honeybadger
+      throw error;
+    });
 }
